@@ -51,6 +51,9 @@ const loadLocalSettings = () => {
 
 const populateConfig = async () => {
   const response = await fetch("/api/config");
+  if (!response.ok) {
+    throw new Error(`Config request failed (${response.status})`);
+  }
   const config = await response.json();
   state.config = config;
 
@@ -65,7 +68,17 @@ const populateConfig = async () => {
 
   elements.promptVersion.value = config.templateVersion;
   loadLocalSettings();
+  ensureValidSelectValue(elements.model);
+  ensureValidSelectValue(elements.templateName);
   updateStrictnessLabel();
+};
+
+const ensureValidSelectValue = (selectElement) => {
+  const options = Array.from(selectElement.options).map((opt) => opt.value);
+  if (!options.length) return;
+  if (!options.includes(selectElement.value)) {
+    selectElement.value = options[0];
+  }
 };
 
 const updateStrictnessLabel = () => {
