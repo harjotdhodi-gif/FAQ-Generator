@@ -85,13 +85,20 @@ const extractStructuredOutput = (responsesPayload) => {
 };
 
 app.get("/api/config", async (_req, res) => {
-  const examples = JSON.parse(await fs.readFile(examplesPath, "utf8"));
-  res.json({
-    templateVersion: templatesConfig.version,
-    templates: templatesConfig.templates,
-    models: ["gpt-4.1-mini", "gpt-4.1", "gpt-5-mini"],
-    examples
-  });
+  try {
+    const examples = JSON.parse(await fs.readFile(examplesPath, "utf8"));
+    res.json({
+      templateVersion: templatesConfig.version,
+      templates: templatesConfig.templates,
+      models: ["gpt-4.1-mini", "gpt-4.1", "gpt-5-mini"],
+      examples
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Failed to load app config.",
+      details: error.message
+    });
+  }
 });
 
 app.post("/api/generate", async (req, res) => {

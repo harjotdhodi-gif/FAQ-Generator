@@ -14,13 +14,34 @@ const elements = {
   copyJson: document.getElementById("copyJson"),
   exportMd: document.getElementById("exportMd"),
   exportHtml: document.getElementById("exportHtml"),
-  exportDocx: document.getElementById("exportDocx")
+  exportDocx: document.getElementById("exportDocx"),
+  statusMessage: document.getElementById("statusMessage")
 };
 
 let state = {
   config: null,
   lastOutput: null,
   exampleIdx: 0
+};
+
+const fallbackConfig = {
+  templateVersion: "1.0.0",
+  models: ["gpt-4.1-mini", "gpt-4.1", "gpt-5-mini"],
+  templates: {
+    default: { name: "Enterprise FAQ Transformer" }
+  },
+  examples: [
+    {
+      sourceType: "support question",
+      input:
+        "Customer asks if they can recover deleted invoices after 90 days. Internal note says data retention is 30 days unless legal hold applies."
+    }
+  ]
+};
+
+const setStatus = (message, isError = false) => {
+  elements.statusMessage.textContent = message;
+  elements.statusMessage.style.color = isError ? "#ffb4b4" : "#9cc3ff";
 };
 
 const saveLocalSettings = () => {
@@ -50,11 +71,19 @@ const loadLocalSettings = () => {
 };
 
 const populateConfig = async () => {
-  const response = await fetch("/api/config");
-  if (!response.ok) {
-    throw new Error(`Config request failed (${response.status})`);
+  let config = fallbackConfig;
+
+  try {
+    const response = await fetch("/api/config");
+    if (!response.ok) {
+      throw new Error(`Config request failed (${response.status})`);
+    }
+    config = await response.json();
+    setStatus("Configuration loaded.");
+  } catch (error) {
+    setStatus(`Using fallback configuration: ${error.message}`, true);
   }
-  const config = await response.json();
+
   state.config = config;
 
   elements.model.innerHTML = config.models
@@ -97,6 +126,7 @@ const pickExample = () => {
 
   elements.sourceType.value = example.sourceType;
   elements.sourceText.value = example.input;
+  setStatus(`Loaded example #${state.exampleIdx}.`);
 };
 
 const generate = async () => {
@@ -113,6 +143,7 @@ const generate = async () => {
 
   elements.generate.disabled = true;
   elements.generate.textContent = "Generating...";
+  setStatus("Generating FAQ output...");
 
   try {
     const response = await fetch("/api/generate", {
@@ -129,8 +160,10 @@ const generate = async () => {
 
     renderOutput(result.data);
     saveLocalSettings();
+    setStatus("FAQ output generated.");
   } catch (error) {
     renderOutput({ error: error.message });
+    setStatus(`Generation failed: ${error.message}`, true);
   } finally {
     elements.generate.disabled = false;
     elements.generate.textContent = "Generate FAQ Output";
@@ -161,7 +194,10 @@ const toMarkdown = (output) => {
 };
 
 const exportAll = (format) => {
-  if (!state.lastOutput) return;
+  if (!state.lastOutput) {
+    setStatus("Generate output before exporting.", true);
+    return;
+  }
 
   if (format === "json") {
     downloadText("faq-output.json", JSON.stringify(state.lastOutput, null, 2), "application/json");
@@ -184,11 +220,17 @@ const exportAll = (format) => {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     );
   }
+
+  setStatus(`Exported ${format.toUpperCase()} file.`);
 };
 
 const copyJson = async () => {
-  if (!state.lastOutput) return;
+  if (!state.lastOutput) {
+    setStatus("Generate output before copying JSON.", true);
+    return;
+  }
   await navigator.clipboard.writeText(JSON.stringify(state.lastOutput, null, 2));
+  setStatus("JSON copied to clipboard.");
 };
 
 elements.strictness.addEventListener("input", updateStrictnessLabel);
@@ -199,6 +241,4 @@ elements.exportMd.addEventListener("click", () => exportAll("md"));
 elements.exportHtml.addEventListener("click", () => exportAll("html"));
 elements.exportDocx.addEventListener("click", () => exportAll("docx"));
 
-populateConfig().catch((error) => {
-  elements.outputPreview.textContent = `Failed to load config: ${error.message}`;
-});
+populateConfig();
