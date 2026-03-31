@@ -84,6 +84,19 @@ const populateConfig = async () => {
     setStatus(`Using fallback configuration: ${error.message}`, true);
   }
 
+  if (!Array.isArray(config.models) || !config.models.length) {
+    config.models = fallbackConfig.models;
+  }
+  if (!config.templates || !Object.keys(config.templates).length) {
+    config.templates = fallbackConfig.templates;
+  }
+  if (!Array.isArray(config.examples)) {
+    config.examples = fallbackConfig.examples;
+  }
+  if (!config.templateVersion) {
+    config.templateVersion = fallbackConfig.templateVersion;
+  }
+
   state.config = config;
 
   elements.model.innerHTML = config.models
