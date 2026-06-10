@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FAQ Generator AI</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <h1>FAQ Generator AI</h1>
+        <p>
+          Convert support questions, policy text, or product notes into structured enterprise FAQ entries.
+        </p>
+      </header>
+
+      <section class="warning-banner">
+        <strong>Warning:</strong> Generated answers may contain unsupported claims. Always run human review before publishing.
+      </section>
+
+      <section class="panel">
+        <h2>Input</h2>
+        <div class="grid two-col">
+          <label>
+            OpenAI API Key
+            <input id="apiKey" type="password" placeholder="sk-..." autocomplete="off" />
+          </label>
+          <label>
+            Model Selector
+            <select id="model">
+              <option value="gpt-4.1-mini">gpt-4.1-mini</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="grid two-col">
+          <label>
+            Source Type
+            <select id="sourceType">
+              <option value="support question">Support Question</option>
+              <option value="policy text">Policy Text</option>
+              <option value="product notes">Product Notes</option>
+            </select>
+          </label>
+          <label>
+            Template
+            <select id="templateName">
+              <option value="default">Enterprise FAQ Transformer</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="grid two-col">
+          <label class="inline">
+            <input type="checkbox" id="deterministic" />
+            Deterministic mode (temperature = 0)
+          </label>
+          <label>
+            Prompt Version Control
+            <input id="promptVersion" type="text" placeholder="e.g., 1.0.0" />
+          </label>
+        </div>
+
+        <label>
+          Strictness (higher = safer, lower creativity)
+          <input id="strictness" type="range" min="0" max="1" step="0.01" value="0.7" />
+          <span id="strictnessLabel">0.70</span>
+        </label>
+
+        <label>
+          Source Text
+          <textarea id="sourceText" rows="10" placeholder="Paste support thread, policy excerpt, or product release note..."></textarea>
+        </label>
+
+        <div class="buttons">
+          <button id="loadExample" type="button">Load Example Dataset</button>
+          <button id="generate" type="button">Generate FAQ Output</button>
+        </div>
+        <p id="statusMessage" class="status"></p>
+      </section>
+
+      <section class="panel">
+        <h2>Output Preview</h2>
+        <pre id="outputPreview">No output yet.</pre>
+        <div class="buttons">
+          <button id="copyJson" type="button">Copy JSON</button>
+          <button id="exportMd" type="button">Export Markdown</button>
+          <button id="exportHtml" type="button">Export HTML</button>
+          <button id="exportDocx" type="button">Export DOCX</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Human Review Checklist</h2>
+        <ul id="reviewChecklist">
+          <li>Verify every claim appears in source text or approved policy.</li>
+          <li>Confirm legal/compliance-sensitive language was reviewed by owner.</li>
+          <li>Check escalation routing team names are accurate for your org.</li>
+          <li>Validate answer tone and terminology for customer-facing style guide.</li>
+          <li>Re-run generation if any hallucination checklist item is warning/fail.</li>
+        </ul>
+      </section>
+    </main>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

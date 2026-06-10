@@ -1,0 +1,20 @@
+[
+  {
+    "id": "example-1",
+    "title": "Refund window clarification",
+    "input": "A customer asks whether annual plan purchases can be refunded after 45 days. Internal note says refunds are usually 30 days unless local law requires more.",
+    "sourceType": "policy text"
+  },
+  {
+    "id": "example-2",
+    "title": "SSO outage troubleshooting",
+    "input": "Support ticket: Users in EU can't log in with SSO since this morning. Product note says status page reported degraded SAML callback region eu-west.",
+    "sourceType": "support question"
+  },
+  {
+    "id": "example-3",
+    "title": "New analytics beta limits",
+    "input": "Product launch note: Analytics beta available for Pro and Enterprise tenants only; max 3 dashboards in beta phase.",
+    "sourceType": "product notes"
+  }
+]

@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/faq-output-schema.json",
+  "type": "object",
+  "required": [
+    "questionRewrite",
+    "shortAnswer",
+    "fullAnswer",
+    "escalationGuidance",
+    "relatedFaqs",
+    "schemaReadyOutput",
+    "hallucinationChecklist"
+  ],
+  "properties": {
+    "questionRewrite": {
+      "type": "string",
+      "minLength": 5
+    },
+    "shortAnswer": {
+      "type": "string",
+      "minLength": 10
+    },
+    "fullAnswer": {
+      "type": "string",
+      "minLength": 30
+    },
+    "escalationGuidance": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["trigger", "team", "reason"],
+        "properties": {
+          "trigger": { "type": "string" },
+          "team": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "relatedFaqs": {
+      "type": "array",
+      "minItems": 3,
+      "items": { "type": "string" }
+    },
+    "schemaReadyOutput": {
+      "type": "object",
+      "required": ["faq_entry_version", "locale", "tags", "answer_markdown"],
+      "properties": {
+        "faq_entry_version": { "type": "string" },
+        "locale": { "type": "string" },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "answer_markdown": { "type": "string" }
+      }
+    },
+    "hallucinationChecklist": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["check", "status", "notes"],
+        "properties": {
+          "check": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["pass", "warning", "fail"]
+          },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}
